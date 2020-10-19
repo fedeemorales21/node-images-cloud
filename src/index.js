@@ -1,6 +1,8 @@
 require('dotenv').config()
 const express = require('express')
+const Handlebars = require('handlebars')
 const exphbs = require('express-handlebars')
+const { allowInsecurePrototypeAccess } = require('@handlebars/allow-prototype-access')
 const { join, extname } = require('path')
 const multer = require('multer')
 
@@ -14,7 +16,8 @@ app.engine('.hbs',exphbs({
   layoutsDir: join(app.get('views'),'layouts'),
   partialsDir: join(app.get('views'),'partials'), 
   defaultLayout: 'main' ,
-  extname: '.hbs'
+  extname: '.hbs',
+  handlebars: allowInsecurePrototypeAccess(Handlebars)
 }))
 app.set('view engine', '.hbs')
 

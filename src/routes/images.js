@@ -1,6 +1,9 @@
 const { Router } = require('express')
 const router = Router()
 
+const Photo = require('../models/Photo')
+const fs = require('fs-extra')
+
 const cloudinary = require('cloudinary').v2
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_NAME,
@@ -8,14 +11,11 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET
 })
 
-const { unlink } = require('fs-extra')
-
-const Photo = require('../models/Photo')
 
 router.get('/', async(req,res) => {
     try {
-        // const photos = await Photo.find()
-        res.render('index' )
+        const photos = await Photo.find()
+        res.render('index', { photos })
     } catch (error) {
         console.log(error)
     }
@@ -28,7 +28,7 @@ router.post('/add', async(req,res) => {
         const { public_id, url } = await cloudinary.uploader.upload(req.file.path)
         const newPhoto = new Photo({ name, public_id, url })
         await newPhoto.save()
-        await unlink(req.file.path)
+        await fs.unlink(req.file.path)
         res.redirect('/')
     } catch (error) {
         console.log(error)
