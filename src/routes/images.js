@@ -15,7 +15,7 @@ cloudinary.config({
 router.get('/', async(req,res) => {
     try {
         const photos = await Photo.find()
-        res.render('index', { photos })
+        res.render( 'index', { photos } )
     } catch (error) {
         console.log(error)
     }
@@ -36,10 +36,11 @@ router.post('/add', async(req,res) => {
 })
 
 
-router.post('/dalete/:id', async(req,res) => {
+router.get('/delete/:id', async(req,res) => {
     try {
-        const id = req.params.id
-        
+        const { public_id } = await Photo.findByIdAndDelete(req.params.id)
+        await cloudinary.uploader.destroy(public_id)
+        res.redirect('/')
     } catch (error) {
         console.log(error)
     }
